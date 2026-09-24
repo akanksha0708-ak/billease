@@ -2,7 +2,8 @@
 
 A full-stack web app for small businesses to manage **customers, products/services, invoices and payments** in one place. It also produces **professional GST invoices as PDF**, which you can print, download or email.
 
-> **Demo login:** `demo@billease.in` / `demo123` (created by `npm run seed`)
+> **Live demo:** **https://billease-production-6169.up.railway.app**  
+> **Demo login:** `demo@billease.in` / `demo123`
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -96,7 +97,7 @@ BillEase keeps all billing data in one database and handles the repetitive work 
 | PDF | **PDFKit** | Builds the invoice PDF on the server |
 | Email | **Nodemailer** | SMTP email with a PDF attachment |
 | Uploads | **Multer** | Logo upload with type and size checks |
-| Tools | VS Code, Git, Chrome DevTools, Render (hosting) | |
+| Tools | VS Code, Git, Chrome DevTools, Railway (hosting) | |
 | Images | [Pixabay](https://pixabay.com/) photo ID 3139127 (free licence) | Login/register background, stored locally in `client/public/images` |
 
 ---
@@ -126,7 +127,7 @@ Billing_System/
 │       ├── mailer.js          # email sending
 │       ├── auth.js            # JWT middleware
 │       └── http.js            # error class + validation helpers
-├── render.yaml                # deployment config
+├── render.yaml                # Render deployment config (alternative host)
 └── package.json               # root scripts (build / start / seed)
 ```
 
@@ -162,7 +163,9 @@ npm run dev:client     # UI  on http://localhost:5173 (forwards /api to the serv
 |---|---|
 | `PORT` | Server port (default 5050) |
 | `JWT_SECRET` | Secret for signing login tokens. **Set this in production** |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Real email sending. Leave empty to use the free Ethereal test inbox |
+| `SEED_DEMO` | `true` recreates the demo account on every start (used on the hosted demo) |
+| `BREVO_API_KEY`, `SMTP_FROM` | Email through Brevo's HTTPS API (use this on hosts that block SMTP, such as Railway) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Email through your own SMTP server. Leave all email settings empty to use the free Ethereal test inbox |
 
 ---
 
@@ -226,18 +229,23 @@ All endpoints except register and login need the header `Authorization: Bearer <
 
 ## 9. Deployment
 
+**Live link: https://billease-production-6169.up.railway.app** (hosted on [Railway](https://railway.com))
+
 The app deploys as **one service**: Express serves both the API and the built React app.
 
-**Render (free):**
-1. Push this folder to a GitHub repository.
-2. On [render.com](https://render.com) choose **New → Blueprint** and pick the repo. `render.yaml` sets everything up.
-3. Open the URL Render gives you and log in with the demo account.
+**Railway (current host):**
+```bash
+railway init --name billease
+railway add --service billease --variables "JWT_SECRET=<random string>" --variables "SEED_DEMO=true"
+railway up
+railway domain
+```
 
-> On Render's free plan the disk resets on each restart, so the database is re-seeded with demo data at startup. For permanent data, attach a persistent disk and set `DB_FILE` to a path on it.
+**Render (alternative, free):** push the repo to GitHub, then on [render.com](https://render.com) choose **New → Blueprint** and pick the repo. `render.yaml` sets everything up.
 
-**Deployment link:** _add your Render URL here after deploying_
-
----
+> `SEED_DEMO=true` recreates the demo account every time the server starts. The hosted database lives on the container's disk, so other data resets when the service restarts. For permanent data, attach a volume and set `DB_FILE` to a path on it.
+>
+> **Email on the live site:** Railway blocks outgoing SMTP on its free/Hobby plans. To send invoice emails there, create a free [Brevo](https://www.brevo.com) account and set `BREVO_API_KEY` and `SMTP_FROM` (a verified sender). Email works out of the box when running locally.
 
 ## 10. Screenshots
 

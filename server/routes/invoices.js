@@ -259,7 +259,7 @@ router.post('/:id/email', async (req, res) => {
     });
   } catch (err) {
     console.error('Email failed:', err.message);
-    throw new HttpError(502, 'Could not send the email. Please check the email settings and try again.');
+    throw new HttpError(502, 'Email could not be sent from this server. The email service may not be set up here — you can still download the PDF and send it yourself.');
   }
 
   if (invoice.status === 'draft') db.prepare("UPDATE invoices SET status = 'sent' WHERE id = ?").run(invoice.id);

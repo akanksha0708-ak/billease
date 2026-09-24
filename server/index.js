@@ -6,6 +6,9 @@ const path = require('path');
 const fs = require('fs');
 const { requireAuth } = require('./utils/auth');
 
+// On hosted demos, (re)create the demo account on every start.
+if (process.env.SEED_DEMO === 'true') require('./seed');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
