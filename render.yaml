@@ -1,0 +1,13 @@
+# One-click deploy on Render (https://render.com): New → Blueprint → select this repo.
+services:
+  - type: web
+    name: billease
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm run seed && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: JWT_SECRET
+        generateValue: true
